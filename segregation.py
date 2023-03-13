@@ -17,6 +17,11 @@ from itertools import product
 class game_board:
     def __init__(self):
         self.m = self._build_map()
+        # Parameters
+        # Threshold
+        # Map size
+        # % filled up
+        # # of iterations
 
     def _build_map(self):
         n_i = 20
@@ -109,12 +114,11 @@ class Window(QWidget):
         button = QPushButton("Go")
         button.clicked.connect(self.game_go)
 
-        # TODO: Add number of iterations
-        self.threshold = QTextEdit()
-        # TODO: Add threshold
+        self.parameters = QTextEdit()
+        self.parameters.textChanged.connect(self.update_parameters)
 
         vbox = QVBoxLayout()
-        vbox.addWidget(self.threshold)
+        vbox.addWidget(self.parameters)
         vbox.addWidget(self.label)
         vbox.addWidget(button)
 
@@ -137,6 +141,21 @@ class Window(QWidget):
         self.game.tick(self.game.m, threshold)
         self.update_map()
 
+    def update_parameters(self) -> None:
+        parameter_str = self.parameters.toPlainText()
+        try:
+            parameters = parameter_str.split(';')
+            parameter_dict = {}
+            for s in parameters:
+                k, v = s.split(':')
+                k = k.strip()
+                v = v.strip()
+                parameter_dict[k] = v
+            print(parameter_dict)
+        except ValueError:
+            print(f"malformed parameter string {parameter_str}")
+            return
+        
 
 
 def main():
