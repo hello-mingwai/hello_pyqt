@@ -35,7 +35,8 @@ class Window(QWidget):
         input_str = self.text_edit_in.toPlainText()
         try:
             _, after_dp = input_str.split("/dp/", 1)
-            before_slash, *_ = after_dp.split("/", 1)
+            before_question_mark, *_ = after_dp.split("?", 1)
+            before_slash, *_ = before_question_mark.split("/", 1)
         except ValueError:
             self.text_edit_out.setPlainText("ValueError")
             return
