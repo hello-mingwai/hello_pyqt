@@ -16,9 +16,9 @@ from itertools import product
 
 class game_board:
     def __init__(self):
-        self.m = self.build_map()
+        self.m = self._build_map()
 
-    def build_map(self):
+    def _build_map(self):
         n_i = 20
         n_j = 40
 
@@ -37,7 +37,7 @@ class game_board:
 
         return m
 
-    def neighbors(self, m, i, j):
+    def _neighbors(self, m, i, j):
         n_i = len(m)
         n_j = len(m[0])
 
@@ -54,14 +54,14 @@ class game_board:
         return counter['o'], counter['x'], counter[' ']
 
 
-    def move(self, m, i, j, n_o_max=99, n_x_max=99):
+    def _move(self, m, i, j, n_o_max=99, n_x_max=99):
         # Setting the n_o_max to 99 means don't care.
         n_i = len(m)
         n_j = len(m[0])
         for _ in range(90):
             ii = randrange(0, n_i)
             jj = randrange(0, n_j)
-            n_o, n_x, _ = self.neighbors(m, ii, jj)
+            n_o, n_x, _ = self._neighbors(m, ii, jj)
             if m[ii][jj] == ' ' and n_o <= n_o_max and n_x <= n_x_max:
                 m[i][j], m[ii][jj] = m[ii][jj], m[i][j]
                 break
@@ -73,7 +73,7 @@ class game_board:
         move_intended = 0
 
         for i, j in product(range(n_i), range(n_j)):
-            n_o, n_x, _ = self.neighbors(m, i, j)
+            n_o, n_x, _ = self._neighbors(m, i, j)
             # print(f"{i=}, {j=}, {n_o=}, {n_x=}, {n_space=}")
 
             # The number of neighbors is 8 at max.
@@ -82,7 +82,7 @@ class game_board:
                 ## OK to move to somewhere a little worse
                 ## It helps explore better overall pattern
                 ## by don't stuck in a local minimal.
-                self.move(m, i, j, n_x_max=n_x+1)
+                self._move(m, i, j, n_x_max=n_x+1)
                 # move(m, i, j)
 
                 # n_x means
@@ -91,7 +91,7 @@ class game_board:
 
                 move_intended += 1
             if m[i][j] == 'x' and n_o > threshold:
-                self.move(m, i, j, n_o_max=n_o+1)
+                self._move(m, i, j, n_o_max=n_o+1)
                 # move(m, i, j)
 
                 move_intended += 1
