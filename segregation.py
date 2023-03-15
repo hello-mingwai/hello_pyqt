@@ -17,6 +17,7 @@ from itertools import product
 class game_board:
     def __init__(self):
         self.m = self._build_map()
+        self.threshold = 4
         # Parameters
         #     Threshold
         #     Map size
@@ -72,23 +73,23 @@ class game_board:
                 m[i][j], m[ii][jj] = m[ii][jj], m[i][j]
                 break
 
-    def tick(self, m, threshold):
-        n_i = len(m)
-        n_j = len(m[0])
+    def tick(self):
+        n_i = len(self.m)
+        n_j = len(self.m[0])
 
         move_intended = 0
 
         for i, j in product(range(n_i), range(n_j)):
-            n_o, n_x, _ = self._neighbors(m, i, j)
+            n_o, n_x, _ = self._neighbors(self.m, i, j)
             # print(f"{i=}, {j=}, {n_o=}, {n_x=}, {n_space=}")
 
             # The number of neighbors is 8 at max.
-            if m[i][j] == 'o' and n_x > threshold:
+            if self.m[i][j] == 'o' and n_x > self.threshold:
                 # n_x+1 means
                 ## OK to move to somewhere a little worse
                 ## It helps explore better overall pattern
                 ## by don't stuck in a local minimal.
-                self._move(m, i, j, n_x_max=n_x+1)
+                self._move(self.m, i, j, n_x_max=n_x+1)
                 # move(m, i, j)
 
                 # n_x means
@@ -96,8 +97,8 @@ class game_board:
                 # move(m, i, j, n_x_max=n_x)
 
                 move_intended += 1
-            if m[i][j] == 'x' and n_o > threshold:
-                self._move(m, i, j, n_o_max=n_o+1)
+            if self.m[i][j] == 'x' and n_o > self.threshold:
+                self._move(self.m, i, j, n_o_max=n_o+1)
                 # move(m, i, j)
 
                 move_intended += 1
@@ -117,6 +118,7 @@ class Window(QWidget):
         button.clicked.connect(self.game_go)
 
         self.parameters = QTextEdit()
+        self.parameters.setText("threshold:4")
         self.parameters.textChanged.connect(self.update_parameters)
 
         vbox = QVBoxLayout()
@@ -144,15 +146,15 @@ class Window(QWidget):
         self.label.setText("\n".join(s_list))
 
     def game_go(self):
-        threshold = 0
-        self.game.tick(self.game.m, threshold)
+        self.update_parameters()
+        self.game.tick()
         self.update_map()
 
     def update_parameters(self) -> None:
+        parameter_dict = {}
         parameter_str = self.parameters.toPlainText()
         try:
             parameters = parameter_str.split(';')
-            parameter_dict = {}
             for s in parameters:
                 k, v = s.split(':')
                 k = k.strip()
@@ -161,6 +163,14 @@ class Window(QWidget):
             print(parameter_dict)
         except ValueError:
             print(f"malformed parameter string {parameter_str}")
+            return
+
+        try:
+            if "threshold" in parameter_dict:
+                self.game.threshold = int(parameter_dict["threshold"])
+        except ValueError as e:
+            print(f"malformed parameter {parameter_dict}")
+            print(f"{e}")
             return
         
 
