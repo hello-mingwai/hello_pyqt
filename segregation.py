@@ -18,10 +18,11 @@ class game_board:
     def __init__(self):
         self.m = self._build_map()
         # Parameters
-        # Threshold
-        # Map size
-        # % filled up
-        # # of iterations
+        #     Threshold
+        #     Map size
+        #     % filled up
+        #     -> become num of x and num of o
+        #     # of iterations
 
     def _build_map(self):
         n_i = 20
@@ -112,6 +113,7 @@ class Window(QWidget):
         self.label.setFont(QFont("courier new"))
 
         button = QPushButton("Go")
+        # button.setDefault(True)
         button.clicked.connect(self.game_go)
 
         self.parameters = QTextEdit()
@@ -124,6 +126,11 @@ class Window(QWidget):
 
         self.setLayout(vbox)
         self.setGeometry(500, 500, 550, 100)
+
+        # TODO:
+        # Control from keyboard.
+        # Example: enter would press a button.
+        # Now it gives no response.
 
     
     def register_game(self, game):
